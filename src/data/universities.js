@@ -1,0 +1,17 @@
+export const germanUniversities = [
+  { id: 'TUM', name: 'Technical University of Munich', city: 'Munich', state: 'Bavaria', type: 'TU9', courses: ['MSc Data Engineering', 'MSc Computer Science', 'MSc Automotive Engineering', 'MSc Management & Technology', 'MSc Robotics'] },
+  { id: 'RWTH', name: 'RWTH Aachen University', city: 'Aachen', state: 'North Rhine-Westphalia', type: 'TU9', courses: ['MSc Automotive Systems', 'MSc Computer Science', 'MSc Mechanical Engineering', 'MSc Electrical Engineering', 'MSc Data Science'] },
+  { id: 'HU-BERLIN', name: 'Humboldt University', city: 'Berlin', state: 'Berlin', type: 'U15', courses: ['MA Economics', 'MSc Computer Science', 'MSc Data Science', 'MA Business Administration'] },
+  { id: 'FU-BERLIN', name: 'FU Berlin', city: 'Berlin', state: 'Berlin', type: 'U15', courses: ['MSc Computer Science', 'MA Economics', 'MSc Data Science', 'MSc Bioinformatics'] },
+  { id: 'TU-BERLIN', name: 'TU Berlin', city: 'Berlin', state: 'Berlin', type: 'TU9', courses: ['MSc Computer Science', 'MSc Automotive Engineering', 'MSc Energy Engineering', 'MSc Industrial Engineering'] },
+  { id: 'KIT', name: 'Karlsruhe Institute of Technology', city: 'Karlsruhe', state: 'Baden-Wurttemberg', type: 'TU9', courses: ['MSc Computer Science', 'MSc Mechanical Engineering', 'MSc Electrical Engineering', 'MSc Informatics'] },
+  { id: 'UNI-HEIDELBERG', name: 'Heidelberg University', city: 'Heidelberg', state: 'Baden-Wurttemberg', type: 'U15', courses: ['MSc Data Science', 'MA Biomedical Sciences', 'MSc Physics', 'MSc Computer Science'] },
+  { id: 'LMU', name: 'Ludwig Maximilian University', city: 'Munich', state: 'Bavaria', type: 'U15', courses: ['MSc Computer Science', 'MSc Data Science', 'MA Economics', 'MSc Statistics'] },
+  { id: 'UNI-STUTTGART', name: 'University of Stuttgart', city: 'Stuttgart', state: 'Baden-Wurttemberg', type: 'TU9', courses: ['MSc Automotive Engineering', 'MSc Mechanical Engineering', 'MSc Computer Science', 'MSc Aerospace Engineering'] },
+  { id: 'TU-DARMSTADT', name: 'TU Darmstadt', city: 'Darmstadt', state: 'Hesse', type: 'TU9', courses: ['MSc Computer Science', 'MSc Electrical Engineering', 'MSc Mechanical Engineering', 'MSc IT Security'] },
+  { id: 'UNI-FREIBURG', name: 'University of Freiburg', city: 'Freiburg', state: 'Baden-Wurttemberg', type: 'U15', courses: ['MSc Computer Science', 'MA Economics', 'MSc Microsystems Engineering'] },
+  { id: 'UNI-GOTTINGEN', name: 'University of Gottingen', city: 'Gottingen', state: 'Lower Saxony', type: 'U15', courses: ['MSc Computer Science', 'MSc Applied Data Science', 'MA Economics'] },
+  { id: 'UNI-HAMBURG', name: 'University of Hamburg', city: 'Hamburg', state: 'Hamburg', type: 'U15', courses: ['MSc Computer Science', 'MSc Data Science', 'MA Economics'] },
+  { id: 'UNI-MANNHEIM', name: 'University of Mannheim', city: 'Mannheim', state: 'Baden-Wurttemberg', type: 'Public', courses: ['MSc Business Analytics', 'MSc Data Science', 'MA Management'] },
+  { id: 'UNI-BONN', name: 'University of Bonn', city: 'Bonn', state: 'North Rhine-Westphalia', type: 'U15', courses: ['MSc Computer Science', 'MSc Economics', 'MSc Mathematics'] },
+]

@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand Blues ── */
+  --color-blue-90: #003675;
+  --color-blue-50: #0A4E8C;
+  --color-blue-40: #B4C6D9;
+  --color-blue-30: #D4DFEB;
+  --color-blue-20: #EEF1F5;
+  --color-blue-10: #F9FBFD;
+  --color-blue-5: #FCFDFE;
+
+  /* ── Greys (blue-grey tone) ── */
+  --color-grey-95: #212325;
+  --color-grey-90: #212325;
+  --color-grey-70: #3D474F;
+  --color-grey-60: #4E5A65;
+  --color-grey-40: #889BAC;
+  --color-grey-20: #D0D8E0;
+  --color-grey-10: #E8ECF1;
+  --color-grey-5: #F4F6F8;
+
+  /* ── Semantic / Status Colours ── */
+  --color-white: #FFFFFF;
+  --color-green: #1C7712;
+  --color-green-light: #F0FDF4;
+  --color-amber: #D97706;
+  --color-amber-light: #FFFBEB;
+  --color-red: #DC2626;
+  --color-red-light: #FEF2F2;
+  --color-purple: #7C3AED;
+  --color-purple-light: #F5F3FF;
+  --color-info: #003675;
+  --color-info-light: #EEF1F5;
+
+  /* ── Typography ── */
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-grey-90);
+  background-color: var(--color-grey-5);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-grey-20); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-grey-40); }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in { animation: slideIn 0.2s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.15s ease-out; }
