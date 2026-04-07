@@ -13,15 +13,6 @@ import { getDashboardStageHeader, getDashboardStageTooltip, getPipelineStageLabe
 import POCHeatmap from '../e2e/POCHeatmap'
 import CityHeatmap from '../shared/CityHeatmap'
 
-const STAGE_COLORS = {
-  New: '#8B5CF6', Assigned: '#3B82F6', Serviceable: '#10B981', Lost: '#EF4444',
-  QC: '#06B6D4', 'Ack Sent': '#A855F7', 'Need Info': '#F59E0B', Converted: '#22C55E',
-  'Doc Prep': '#6366F1', APS: '#0EA5E9', Counselling: '#8B5CF6', Shortlisting: '#3B82F6',
-  'Uni Finalization': '#14B8A6', Applications: '#6366F1', 'Application Review': '#F97316',
-  'Offer Letter': '#10B981',
-  Enrolled: '#3B82F6', 'In Progress': '#F59E0B', Completed: '#10B981', Refund: '#EF4444',
-}
-
 const PIE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#F97316', '#6366F1', '#14B8A6', '#A855F7']
 
 const PIPELINE_COLORS = {
@@ -141,13 +132,6 @@ export default function StudentsTab({ data, role, filters }) {
   const conversionRate = metrics.totalCount > 0 ? ((metrics.convertedCount / metrics.totalCount) * 100) : 0
   const fullyServiced = pipeline.servicePipeline.find(s => s.stage === 'Fully Serviced')?.count || 0
   const serviceRate = metrics.totalCount > 0 ? ((fullyServiced / metrics.totalCount) * 100) : 0
-
-  const stageChartData = useMemo(() =>
-    Object.entries(metrics.stageAgg)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count),
-    [metrics.stageAgg]
-  )
 
   const intakeChartData = useMemo(() =>
     Object.entries(metrics.intakeDistribution)
@@ -384,62 +368,6 @@ export default function StudentsTab({ data, role, filters }) {
           </div>
         </>
       )}
-
-      <SectionHeading
-        title="Stage overview"
-        description="Horizontal bar: total students per internal stage key (Germany + E2E combined). The intake donut is the same breakdown as Intake share, shown beside the bar chart."
-      />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {stageChartData.length > 0 && (
-          <ChartCard title="Stage distribution (headcount)" description="Total students in each pipeline stage in the current filter scope.">
-            <ResponsiveContainer width="100%" height={Math.max(220, stageChartData.length * 32)}>
-              <BarChart data={stageChartData} layout="vertical" margin={{ left: 90, right: 20, top: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis type="number" tick={{ fontSize: 11 }} />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  tick={{ fontSize: 10 }}
-                  width={100}
-                  tickFormatter={v => getDashboardStageHeader(v)}
-                />
-                <Tooltip formatter={(val) => [val, 'Students']} contentStyle={{ fontSize: 12 }} />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                  {stageChartData.map((entry, i) => (
-                    <Cell key={entry.name} fill={STAGE_COLORS[entry.name] || PIE_COLORS[i % PIE_COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        )}
-
-        {intakeChartData.length > 0 && (
-          <ChartCard title="Intake distribution" description="Same intake breakdown as Intake share — alternate layout (donut + legend).">
-            <div className="flex items-center gap-6">
-              <ResponsiveContainer width="55%" height={240}>
-                <PieChart>
-                  <Pie data={intakeChartData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={3} dataKey="count" nameKey="name">
-                    {intakeChartData.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(val) => [val, 'Students']} contentStyle={{ fontSize: 12 }} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-2">
-                {intakeChartData.map((entry, i) => (
-                  <div key={entry.name} className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                    <span className="text-[12px] text-grey-70">{entry.name}</span>
-                    <span className="text-[12px] font-semibold text-grey-90">{entry.count.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </ChartCard>
-        )}
-      </div>
 
       {/* City/State Heatmap */}
       {hasGermany && (geo === 'all' || geo === 'germany') && (
