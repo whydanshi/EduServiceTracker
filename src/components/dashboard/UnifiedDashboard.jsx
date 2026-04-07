@@ -7,6 +7,27 @@ import FinancialsTab from './FinancialsTab'
 import { scopeDataByRole, applyFilters, getAvailableCountries } from '../../utils/dashboardData'
 import { exportStudentsOverview, exportFinancialsOverview } from '../../utils/excelExport'
 
+function DashboardScopeLine({ filters, activeTab, showGeo }) {
+  const parts = []
+  if (showGeo && filters.country && filters.country !== 'all') {
+    parts.push(filters.country === 'germany' ? 'Germany' : 'E2E (UK)')
+  }
+  if (filters.intake && filters.intake !== 'all') {
+    parts.push(`Intake: ${filters.intake}`)
+  }
+  if (activeTab === 'financials' && filters.month && filters.month !== 'all') {
+    parts.push(`Month: ${filters.month}`)
+  }
+  if (parts.length === 0) return null
+  return (
+    <p className="text-[12px] text-slate-600 mb-4">
+      Showing:{' '}
+      <span className="font-semibold text-slate-800">{parts.join(' · ')}</span>
+      {' '}(all KPIs and charts below use this scope)
+    </p>
+  )
+}
+
 export default function UnifiedDashboard({ role }) {
   const [activeTab, setActiveTab] = useState('students')
   const [filters, setFilters] = useState({ country: 'all', intake: 'all', month: 'all' })
@@ -67,6 +88,8 @@ export default function UnifiedDashboard({ role }) {
           activeTab={activeTab}
         />
       </div>
+
+      <DashboardScopeLine filters={filters} activeTab={activeTab} showGeo={countries.length > 1} />
 
       {activeTab === 'students'
         ? <StudentsTab data={filteredData} role={role} filters={filters} />

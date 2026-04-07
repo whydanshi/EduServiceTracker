@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import MarginBadge from './MarginBadge'
 import { calculateStudentPnL } from '../../utils/pnlCalculator'
 
-export default function POCHeatmap({ students = [], pocField = 'salesPOC', title = 'Sales POC Margins' }) {
+export default function POCHeatmap({ students = [], pocField = 'salesPOC', title = 'Sales POC Margins', description }) {
   const [sortOrder, setSortOrder] = useState('asc')
 
   const pocData = useMemo(() => {
@@ -47,8 +47,13 @@ export default function POCHeatmap({ students = [], pocField = 'salesPOC', title
   return (
     <div className="bg-white border border-grey-20 rounded-xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-grey-10">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[14px] font-semibold text-grey-95">{title}</h3>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-[14px] font-semibold text-grey-95">{title}</h3>
+            {description && (
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug max-w-xl">{description}</p>
+            )}
+          </div>
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}

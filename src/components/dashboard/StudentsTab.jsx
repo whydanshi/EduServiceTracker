@@ -9,6 +9,7 @@ import {
   getStageMixByMonth, getJourneyTrendData, getServiceCompletionTrend,
   getSalesServiceGapData, getMonthlyEnrollmentsByProduct,
 } from '../../utils/dashboardData'
+import { getDashboardStageHeader, getDashboardStageTooltip, getPipelineStageLabel } from '../../utils/dashboardStageLabels'
 import POCHeatmap from '../e2e/POCHeatmap'
 import CityHeatmap from '../shared/CityHeatmap'
 
@@ -36,6 +37,25 @@ const STAGE_MIX_COLORS = {
 const SERVICE_TREND_COLORS = {
   'Fully Serviced': '#10B981', 'In Progress': '#8B5CF6', 'Services Initiated': '#3B82F6',
   'Awaiting Services': '#F59E0B', 'Pre-Service': '#94A3B8',
+}
+
+function ChartCard({ title, description, children, className = '' }) {
+  return (
+    <div className={`bg-white border border-grey-20 rounded-xl p-5 ${className}`}>
+      <h3 className="text-[14px] font-semibold text-slate-900">{title}</h3>
+      {description && <p className="text-[11px] text-slate-600 mt-1 mb-4 leading-snug">{description}</p>}
+      {children}
+    </div>
+  )
+}
+
+function SectionHeading({ title, description }) {
+  return (
+    <div className="border-b border-grey-10 pb-1 mb-2">
+      <h2 className="text-[13px] font-semibold text-slate-700 uppercase tracking-wider">{title}</h2>
+      {description && <p className="text-[11px] text-slate-600 mt-1 normal-case font-normal tracking-normal">{description}</p>}
+    </div>
+  )
 }
 
 function MetricCard({ icon: Icon, label, value, sub, color = 'blue' }) {
@@ -96,7 +116,7 @@ function PipelineBar({ stages, title, label }) {
           <div key={s.stage} className="flex items-start gap-1.5 max-w-[min(100%,220px)]">
             <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: PIPELINE_COLORS[s.stage] || '#94A3B8' }} />
             <span className="text-[11px] text-slate-700 leading-snug">
-              <span className="font-semibold text-slate-900">{s.stage}</span>
+              <span className="font-semibold text-slate-900">{getPipelineStageLabel(s.stage)}</span>
               {' '}
               <span className="text-slate-500">{s.count.toLocaleString()} · {s.pct.toFixed(1)}%</span>
             </span>
@@ -141,6 +161,10 @@ export default function StudentsTab({ data, role, filters }) {
 
   return (
     <div className="space-y-6">
+      <p className="text-[11px] text-slate-600 -mt-2 mb-1">
+        KPIs reflect the same scope as the filters above (intake / region). Total students = Germany leads + E2E students in scope.
+      </p>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <MetricCard icon={Users} label="Total Students" value={metrics.totalCount.toLocaleString()} sub={`${metrics.germanyCount + metrics.e2eCount} across products`} color="blue" />
@@ -154,16 +178,28 @@ export default function StudentsTab({ data, role, filters }) {
       {matrix.length > 0 && (
         <div className="bg-white border border-grey-20 rounded-xl overflow-hidden">
           <div className="px-5 py-3.5 border-b border-slate-200">
-            <h3 className="text-[14px] font-semibold text-slate-900">Student Stage Distribution</h3>
+            <h3 className="text-[14px] font-semibold text-slate-900">Student stage distribution</h3>
+            <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+              Count of students by canonical intake (rows) and pipeline stage (columns). Germany stages follow the service/journey model; E2E stages are prefixed &quot;E2E —&quot;. With <span className="font-medium">Global</span>, columns combine both product lines.
+            </p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-indigo-800 text-white">
                   <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider sticky left-0 bg-indigo-800 z-10 border-r border-indigo-700">Intake</th>
-                  {stages.map(s => (
-                    <th key={s} className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider text-center whitespace-nowrap">{s}</th>
-                  ))}
+                  {stages.map(s => {
+                    const tip = getDashboardStageTooltip(s)
+                    return (
+                      <th
+                        key={s}
+                        title={tip || undefined}
+                        className="px-3 py-2.5 text-[11px] font-bold text-center whitespace-nowrap max-w-[140px] leading-tight"
+                      >
+                        {getDashboardStageHeader(s)}
+                      </th>
+                    )
+                  })}
                   <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider text-center">Total</th>
                 </tr>
               </thead>
@@ -194,25 +230,25 @@ export default function StudentsTab({ data, role, filters }) {
         </div>
       )}
 
-      {/* Journey Pipelines */}
-      <div className="border-b border-grey-10 pb-1 mb-2">
-        <h2 className="text-[13px] font-semibold text-grey-50 uppercase tracking-wider">Journey Pipelines</h2>
-      </div>
+      <SectionHeading
+        title="Journey pipelines"
+        description="Sales journey: payment / enrolment stages. Service journey: delivery stages. Counts in the bar; full labels in the legend below each bar."
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PipelineBar stages={pipeline.salesPipeline} title="Sales Journey" label="Payment Status" />
-        <PipelineBar stages={pipeline.servicePipeline} title="Service Journey" label="Service Delivery" />
+        <PipelineBar stages={pipeline.salesPipeline} title="Sales journey" label="Payment status" />
+        <PipelineBar stages={pipeline.servicePipeline} title="Service journey" label="Service delivery" />
       </div>
 
-      {/* Enrollment Analytics */}
-      <div className="border-b border-grey-10 pb-1 mb-2">
-        <h2 className="text-[13px] font-semibold text-grey-50 uppercase tracking-wider">Enrollment Analytics</h2>
-      </div>
+      <SectionHeading
+        title="Enrollment analytics"
+        description="New records by month, split by region (E2E vs Germany). Intake share shows distribution of students across intake labels — not product lines."
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Monthly Enrollments by Product */}
         {monthlyEnrollments.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Monthly Enrollments by Product</h3>
-            <p className="text-[11px] text-grey-40 mb-4">Stacked student count with total trend overlay</p>
+          <ChartCard
+            title="Monthly enrollments by region"
+            description="Stacked student counts by month. E2E (UK) vs Germany — not Italy/MBBS product tags unless added to data."
+          >
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyEnrollments} margin={{ left: 5, right: 5, top: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -224,14 +260,14 @@ export default function StudentsTab({ data, role, filters }) {
                 <Bar dataKey="Germany" stackId="enroll" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         )}
 
-        {/* Product Share */}
         {intakeChartData.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Product Share</h3>
-            <p className="text-[11px] text-grey-40 mb-4">Student distribution with total count in centre</p>
+          <ChartCard
+            title="Intake share"
+            description="Share of students by canonical intake (Summer/Winter seasons). This is not a product mix chart."
+          >
             <div className="flex items-center gap-6">
               <ResponsiveContainer width="55%" height={240}>
                 <PieChart>
@@ -253,17 +289,20 @@ export default function StudentsTab({ data, role, filters }) {
                 ))}
               </div>
             </div>
-          </div>
+          </ChartCard>
         )}
       </div>
 
-      {/* Stage Mix + Trends */}
+      <SectionHeading
+        title="Payment and service trends"
+        description="Stage mix shows % composition each month (how the funnel mix changes). Journey trend shows headcounts (volume). Service completion trend uses fulfilment stages — different legend from payment stages."
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Stage Mix by Month (100% stacked area) */}
         {stageMix.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Stage Mix by Month</h3>
-            <p className="text-[11px] text-grey-40 mb-4">100% normalised — composition shift over time</p>
+          <ChartCard
+            title="Stage mix by month"
+            description="100% stacked: share of students in each payment stage per month. Answers &quot;what % are in partial vs complete&quot; — not raw volume."
+          >
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={stageMix} margin={{ left: 0, right: 5, top: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -276,14 +315,14 @@ export default function StudentsTab({ data, role, filters }) {
                 ))}
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         )}
 
-        {/* Journey Stage Trend */}
         {journeyTrend.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Journey Stage Trend</h3>
-            <p className="text-[11px] text-grey-40 mb-4">Monthly evolution of payment stages over time</p>
+          <ChartCard
+            title="Journey stage trend (payment)"
+            description="Number of students in each payment stage per month — same stages as stage mix, but as counts (volume), not percentages."
+          >
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={journeyTrend} margin={{ left: 0, right: 5, top: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -297,14 +336,14 @@ export default function StudentsTab({ data, role, filters }) {
                 <Line type="monotone" dataKey="Lead" stroke="#94A3B8" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         )}
 
-        {/* Service Completion Trend */}
         {serviceTrend.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Service Completion Trend</h3>
-            <p className="text-[11px] text-grey-40 mb-4">Monthly service stage progression</p>
+          <ChartCard
+            title="Service completion trend"
+            description="Headcount in each service-delivery stage by month (pre-service through fully serviced)."
+          >
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={serviceTrend} margin={{ left: 0, right: 5, top: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -317,20 +356,18 @@ export default function StudentsTab({ data, role, filters }) {
                 ))}
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         )}
       </div>
 
-      {/* Sales vs Service Gap */}
       {salesServiceGap.length > 0 && (
         <>
-          <div className="border-b border-grey-10 pb-1 mb-2">
-            <h2 className="text-[13px] font-semibold text-grey-50 uppercase tracking-wider">Sales vs Service Gap</h2>
-          </div>
+          <SectionHeading
+            title="Sales vs service gap"
+            description="Per region: students who reached payment complete vs fully serviced. Gap = paid but not yet fully serviced (backlog)."
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white border border-grey-20 rounded-xl p-5">
-              <h3 className="text-[14px] font-semibold text-grey-95 mb-1">Sales vs Service Gap</h3>
-              <p className="text-[11px] text-grey-40 mb-4">Students paid but not yet fully serviced</p>
+            <ChartCard title="Payment vs fulfilment" description="Compare payment-complete count to fully serviced; orange gap is the backlog.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={salesServiceGap} margin={{ left: 10, right: 10, top: 5, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -343,21 +380,29 @@ export default function StudentsTab({ data, role, filters }) {
                   <Bar dataKey="gap" name="Gap" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={40} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </ChartCard>
           </div>
         </>
       )}
 
-      {/* Charts Row: Stage Distribution + Intake Distribution */}
+      <SectionHeading
+        title="Stage overview"
+        description="Horizontal bar: total students per internal stage key (Germany + E2E combined). The intake donut is the same breakdown as Intake share, shown beside the bar chart."
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {stageChartData.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-4">Stage Distribution</h3>
+          <ChartCard title="Stage distribution (headcount)" description="Total students in each pipeline stage in the current filter scope.">
             <ResponsiveContainer width="100%" height={Math.max(220, stageChartData.length * 32)}>
               <BarChart data={stageChartData} layout="vertical" margin={{ left: 90, right: 20, top: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis type="number" tick={{ fontSize: 11 }} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={85} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tick={{ fontSize: 10 }}
+                  width={100}
+                  tickFormatter={v => getDashboardStageHeader(v)}
+                />
                 <Tooltip formatter={(val) => [val, 'Students']} contentStyle={{ fontSize: 12 }} />
                 <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                   {stageChartData.map((entry, i) => (
@@ -366,12 +411,11 @@ export default function StudentsTab({ data, role, filters }) {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartCard>
         )}
 
         {intakeChartData.length > 0 && (
-          <div className="bg-white border border-grey-20 rounded-xl p-5">
-            <h3 className="text-[14px] font-semibold text-grey-95 mb-4">Intake Distribution</h3>
+          <ChartCard title="Intake distribution" description="Same intake breakdown as Intake share — alternate layout (donut + legend).">
             <div className="flex items-center gap-6">
               <ResponsiveContainer width="55%" height={240}>
                 <PieChart>
@@ -393,7 +437,7 @@ export default function StudentsTab({ data, role, filters }) {
                 ))}
               </div>
             </div>
-          </div>
+          </ChartCard>
         )}
       </div>
 
@@ -410,10 +454,26 @@ export default function StudentsTab({ data, role, filters }) {
 
       {/* POC Heatmap */}
       {hasE2E && (geo === 'all' || geo === 'e2e') && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <POCHeatmap students={data.e2eStudents} pocField="salesPOC" title="Sales POC Margins" />
-          <POCHeatmap students={data.e2eStudents} pocField="servicePOC" title="Service POC Margins" />
-        </div>
+        <>
+          <SectionHeading
+            title="E2E margin by POC"
+            description="UK E2E students only. Each bar is the average of per-student deal margin % (same P&amp;L formula). Sales POC vs Service POC only changes which field we group by — not two different margin definitions."
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <POCHeatmap
+              students={data.e2eStudents}
+              pocField="salesPOC"
+              title="E2E margin by sales POC"
+              description="Average deal margin % for students attributed to each sales POC (closing / ownership field)."
+            />
+            <POCHeatmap
+              students={data.e2eStudents}
+              pocField="servicePOC"
+              title="E2E margin by service POC"
+              description="Average deal margin % for students attributed to each service POC (delivery owner). Same margin formula as sales side; different grouping."
+            />
+          </div>
+        </>
       )}
     </div>
   )
