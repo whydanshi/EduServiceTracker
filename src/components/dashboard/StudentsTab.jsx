@@ -380,25 +380,19 @@ export default function StudentsTab({ data, role, filters }) {
         />
       )}
 
-      {/* POC Heatmap */}
+      {/* E2E: service POC margin (no sales POC — E2E has no sales owners on records) */}
       {hasE2E && (geo === 'all' || geo === 'e2e') && (
         <>
           <SectionHeading
-            title="E2E margin by POC"
-            description="UK E2E students only. Each bar is the average of per-student deal margin % (same P&amp;L formula). Sales POC vs Service POC only changes which field we group by — not two different margin definitions."
+            title="E2E margin by service POC"
+            description="UK E2E students only. Each bar is the average of per-student deal margin % (same P&amp;L formula), grouped by service / delivery owner."
           />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <POCHeatmap
-              students={data.e2eStudents}
-              pocField="salesPOC"
-              title="E2E margin by sales POC"
-              description="Average deal margin % for students attributed to each sales POC (closing / ownership field)."
-            />
+          <div className="grid grid-cols-1 max-w-3xl">
             <POCHeatmap
               students={data.e2eStudents}
               pocField="servicePOC"
               title="E2E margin by service POC"
-              description="Average deal margin % for students attributed to each service POC (delivery owner). Same margin formula as sales side; different grouping."
+              description="Average deal margin % for students attributed to each service POC (delivery owner)."
             />
           </div>
         </>
